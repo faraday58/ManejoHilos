@@ -3,6 +3,8 @@ package mx.unam.unica.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     TextView txtvContar;
     int sum;
     int contador;
+    private Handler manejador= new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +37,37 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener onClickbtnContar= View ->
     {
      // TareaLarga(); Acceso secuencial
+        /*
+        Lanzar múltiples hilos anónimos
         contador+=1;
         Log.d("Número de Hilo: "," " + contador);
         Hilo();
+         */
+
+        SincronizarHilos();
     };
+
+    private void SincronizarHilos() {
+
+        manejador.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //txtvContar.setText("Pasó un segundo");
+                NuevaTareaLarga();
+
+            }
+        },1000);
+        manejador.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //txtvContar.setText("Pasaron 10 segundos");
+                NuevaTareaLarga();
+
+            }
+        },10000);
+
+    }
+
 
     public  void Hilo()
     {
@@ -67,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
             sum+=i;
             Log.d("Tarea", " " + sum);
         }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txtvContar.setText(String.valueOf(  sum));
+            }
+        });
     }
 
     public void TareaLarga()
